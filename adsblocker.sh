@@ -1,8 +1,11 @@
 #!/bin/bash
 
 echo "...Start..."
-apt-get update
-apt-get upgrade -y
+ENV TZ=Asia
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+RUN apt update && apt install -y python-pip python-dev ssh python-boto3
+RUN pip  install ansible==2.4.3.0
+
 
 echo "...Installing Bind9..."
 # Install Bind9 (DNS Server)
@@ -23,6 +26,8 @@ systemctl restart bind9
 echo "...Verify Data..."
 named-checkconf
 named-checkzone rpz /etc/bind/adsblocker.db
+
+
 
 #Schedule Cron Job to fetch updated domain list
 echo "...Set Cronjob for future update..."
